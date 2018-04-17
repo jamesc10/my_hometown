@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+	<title>Owensboro, Kentucky</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" />
+	<!-- update to v.7 normalize css -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.css" />
+	<!-- update to v1.2 leaflet css -->
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Shrikhand" rel="stylesheet">
+	<!-- new fancy font -->
+
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background: #f5f5f5;
+			font-family: "Noto Sans", sans-serif;
+			color: #3d3d3d;
+			font-size: 100%/* added to match lesson */
+		}
+
+		section {
+			width: 960px;
+			margin: 20px auto;
+		}
+
+		h1 {
+			width: 960px;
+			margin: 20px auto;
+			/* no margin in lesson, left as is */
+			font-family: 'Shrikhand', cursive;
+			/*new font */
+			letter-spacing: .04em;
+		}
+
+		h2 {
+			font-size: 1.5em;
+			/* added to match lesson */
+			font-family: 'Shrikhand', cursive;
+			/* new font */
+			letter-spacing: .04em;
+		}
+
+		p {
+			font-size: 1em;
+			line-height: 1.5em;
+		}
+
+		a {
+			color: #4fab24;
+			/* new color for links; greenish */
+			font-weight: bold;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		ul {
+			padding-left: 20px;
+		}
+
+		li {
+			margin: 10px 0
+		}
+
+		#map {
+			width: 960px;
+			height: 540px;
+			margin: 10px auto;
+			border: 2px solid #d3d3d3;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>Owensboro, Kentucky - Bar-B-Q Capital of the World! </h1>
+
+	<div id='map'></div>
+
+	<section>
+		<h2>about this map</h2>
+		<p>Wikipedia - <a target="_blank" href="https://en.wikipedia.org/wiki/Owensboro%2C_Kentucky">Owensboro, KY</a></p>
+		<!-- open in new window -->
+
+		<p>This is a map of Owensboro KY, my hometown. Known for their barbecue, particularly mutton (an acquired taste). </p>
+		<p>Owensboro was the site of the last public hanging in the USA. Held on August 14, 1936, Rainey Bethea, a 26-year-old African-American man was hanged for the rape & murder of 70-year-old Lischa Edwards. The carnival atmosphere turned ugly when the crowd
+			started to tear at the clothes and body before Bethea was dead. Due to the embarrassing spectacle, the General Assembly abolished public executions.</p>
+
+		<ul>
+			<li>See my projects on GitHub: <a target="_blank" href="https://github.com/jamesc10">James C.</a></li>
+			<li>Visit my UAV website <a target="_blank" href="http://www.shockUAVe.com">ShockUAVe.com</a>.</li>
+		</ul>
+	</section>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/leaflet.js"></script>
+	<!-- updated jquery & leaflet script js -->
+	<script src="data/route.js"></script>
+
+	<script>
+		// map options
+		var options = {
+			center: [37.75093, -87.1000], // lat/lon values
+			zoom: 12.4,
+			zoomSnap: .1
+		}
+
+		// create a Leaflet map in our division container with id of 'map'
+		var map = L.map('map', options);
+
+		// restrict map to bounds
+		map.setMaxBounds(map.getBounds());
+
+		// set min and max zoom level
+		map.setMinZoom(map.getZoom() - 2);
+		map.setMaxZoom(map.getZoom() + 2);
+
+
+
+		//regular style map - used in small screen branch for Challenge
+		var Esri_WorldStreetMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+		}).addTo(map);
+
+		// Location data
+
+		var myLocations = [
+			{
+				name: "Owensboro Convention Center",
+				properties: {
+					coordinates: [37.776300, -87.11682],
+					type: "Lodging",
+					address: "501 West 2nd Street",
+					phone: "270-123-4567",
+					website: "http://www.owensborocenter.com/"
+				}
+			},
+			{
+				name: "Moonlight BBQ Inn",
+				properties: {
+					coordinates: [37.756786, -87.148987],
+					type: "BBQ",
+					address: "2840 West Parrish Ave.",
+					phone: "270-684-7929",
+					website: "http://www.moonlite.com/"
+				}
+			},
+			{
+				name: "Old Hickory",
+				properties: {
+					coordinates: [37.751331, -87.113140],
+					type: "BBQ",
+					address: "338 Washington Ave.",
+					phone: "270-926-9000",
+					website: "http://oldhickorybar-b-q.com/"
+				}
+			},
+			{
+				name: "Ole South Barbeque",
+				properties: {
+					coordinates: [37.752537, -87.054132],
+					type: "BBQ",
+					address: "3523 KY-54 Highway",
+					phone: "270-926-6464",
+					website: "http://olesouthbbq.com"
+				}
+			},
+			{
+				name: "Grillin & Chillin BBQ",
+				properties: {
+					coordinates: [37.744217, -87.108320],
+					type: "BBQ",
+					address: "3006 Allen St.",
+					phone: "270-570-0243",
+					website: "https://www.grillinandchillinbbq.com/"
+				}
+			},
+			{
+				name: "Legion Park",
+				properties: {
+					coordinates: [37.740984, -87.105062],
+					type: "Park",
+					address: "3047 Legion Park Dr",
+					phone: "270-687-8713",
+					website: "https://www.owensboroparks.org/"
+				}
+			},
+			{
+				name: "Ben Hawes Park",
+				properties: {
+					coordinates: [37.796312, -87.183557],
+					type: "Park",
+					address: "400 Booth Field Rd.",
+					phone: "270-687-7134",
+					website: "https://www.owensboroparks.org/"
+				}
+			},
+			{
+				name: "Fairfield Inn",
+				properties: {
+					coordinates: [37.725810, -87.121980],
+					type: "Lodging",
+					address: "800 Salem Dr",
+					phone: "20-688-8887",
+					website: "https://www.marriott.com/hotels/travel/owbfi-fairfield-inn-owensboro/"
+				}
+			}
+		];
+
+		var typeIconURL = [
+					"svgs/lodging-15.svg",
+					"svgs/bbq-15.svg",
+					"svgs/star-15.svg"
+				];
+
+		// if a BBQ place, flag it!
+		for (var i = 0; i < myLocations.length; i++) {
+			if (myLocations[i].properties.type == "BBQ") {
+				var yesItIsBbq = "<b>Get your BBQ Here</b> <br> ";
+			} else {
+				var yesItIsBbq = ""; //if not, say nothing
+			}
+			// build Popup
+			var locationPopup = "<h2>" + myLocations[i].name + "</h2>" +
+				"Address: " + myLocations[i].properties.address +
+				"<br>" + "Phone Number: " + myLocations[i].properties.phone +
+				"<br>" + "Website: <a href='" +
+			  myLocations[i].properties.website +
+    	"'>" +
+   			myLocations[i].properties.website +
+    	"</a>" +
+				"<br>" + yesItIsBbq;
+
+			var iconLocation = createIcon(myLocations[i].properties.type);
+
+			// tooltip & marker
+
+			L.marker(myLocations[i].properties.coordinates, {
+					icon: iconLocation
+				})
+				.addTo(map) // add it to the map
+				.bindPopup(locationPopup); // bind the data to the popup
+		};
+
+		//Function to determine type of location and return appropriate Leaflet icon object
+
+		function createIcon(typeOfLocation) {
+			var iconURL = "", // declare the iconURL
+				iconSize = 30; // create default size
+
+			if (typeOfLocation == "Lodging") {
+				iconURL = typeIconURL[0];
+			} else if (typeOfLocation == "BBQ") {
+				iconURL = typeIconURL[1];
+			} else {
+				iconURL = typeIconURL[2];
+			};
+
+			// Create a Leaflet icon object
+			var result = L.icon({
+				iconUrl: iconURL,
+				iconSize: iconSize,
+				popupAnchor: [0, 0] // Center of your icon is [0,0]
+			});
+
+			// Function returns a properly formatted Leaf icon object to place on your map
+			return result;
+
+		};
+
+		var myRoute = L.geoJson(routeData, {
+
+			filter: function(feature) {
+				if (feature.geometry.type == "LineString") {
+					return feature;
+				}
+			},
+			style: function(feature) {
+
+				return {
+					color: "#28ff19",
+					weight: 4,
+					opacity: .8,
+					dashArray: "5, 5"
+				}
+			}
+
+		}).addTo(map);
+
+		var myStops = L.geoJson(routeData, {
+
+			filter: function(feature) {
+				if (feature.geometry.type == "Point") {
+					return feature;
+				}
+			},
+			onEachFeature: function(feature, layer) {
+
+				layer.bindTooltip(feature.properties.name);
+			}
+
+		}).addTo(map);
+
+	</script>
+
+</body>
+
+</html>
